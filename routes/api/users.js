@@ -8,7 +8,7 @@ const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/Users');
 
-//@route    GET api/profile
+//@route    GET api/users
 //@desc     Test Route
 //@access   Public
 router.post('/', [
@@ -31,7 +31,9 @@ async (req, res)=>{
         //see if user exists 
         let user = await User.findOne({ email })
         if(user) {
-            return res.status(400).json({ errors: [{ msg: 'user already exists' }] });
+            return res
+                .status(400)
+                .json({ errors: [{ msg: 'user already exists' }] });
         }
         //get users gravatar --pass email into method
         const avatar = gravatar.url(email, {
@@ -62,9 +64,10 @@ async (req, res)=>{
             }
         }
 
-        jwt.sign(payload, 
+        jwt.sign(
+            payload, 
             config.get('jwtSecret'), 
-            { expiresIn: 3600000 },
+            { expiresIn: 360000 },
             (err, token) => {
                 if(err) throw err;
                 res.json({ token })
