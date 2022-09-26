@@ -1,4 +1,6 @@
 {
     "mongoURI":"mongodb+srv://astitt123:astitt123@cluster0.jozbiey.mongodb.net/?retryWrites=true&w=majority",
-    "jwtSecret": "mysecrettocken"
+    "jwtSecret": "mysecrettocken",
+    "githubClientId": "117e7842b8db0af1f41c",
+    "githubSecret": "67a873aca0f6514d293992b58318b2b33db00c87"
 }
