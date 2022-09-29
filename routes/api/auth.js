@@ -19,7 +19,6 @@ router.get("/", auth, async (req, res) => {
     res.status(500).send("Server Error");
   }
 
-  res.send("Auth Route");
 });
 
 //@route    GET api/auth

@@ -41,16 +41,17 @@ router.post(
     auth, //use auth
     [
       //use middleware
-      check("status", "Stutus is required").not().isEmpty(),
+      check("status", "Status is required").not().isEmpty(),
       check("skills", "Skills is required").not().isEmpty(),
     ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
+    //if there are errors, return a response
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
+    //
     const {
       company,
       website,
@@ -68,7 +69,8 @@ router.post(
 
     //build profile fields object to insert into the database
     const profileFields = {};
-    profileFields.user = req.body.id;
+
+    profileFields.user = req.user.id;
 
     //check if the fields are coming in before setting the fields
     if (company) profileFields.company = company;
@@ -77,10 +79,11 @@ router.post(
     if (bio) profileFields.bio = bio;
     if (status) profileFields.status = status;
     if (githubusername) profileFields.githubusername = githubusername;
+    //this needs to be turned into an array
     if (skills) {
       profileFields.skills = skills.split(",").map((skill) => skill.trim());
     }
-    //console.log(profileFields.skills);
+    console.log(profileFields.skills);
 
     //build social object
     profileFields.social = {};
@@ -91,7 +94,7 @@ router.post(
     if (linkedin) profileFields.social.linkedin = linkedin;
     if (instagram) profileFields.social.instagram = instagram;
 
-    console.log(profileFields.social.twitter);
+    //console.log(profileFields.social.twitter);
 
     try {
       let profile = await Profile.findOne({ user: req.user.id });
@@ -133,28 +136,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-//@route    GET api/profile/user/:userid
-//@desc     get profile by user id
-//@access   Public
-
-router.get("/users/:user_id", async (req, res) => {
-  try {
-    const profile = await Profile.findOne({
-      user: req.params.user_id,
-    }).populate("user", ["name", "avatar"]);
-
-    if (!profile) return res.status(400).json({ msg: "Profile not found" });
-
-    res.json(profile);
-  } catch (error) {
-    console.log(error);
-    if (error.kind == "ObjectId") {
-      return res.status(400).json({ msg: "Profile not found!" });
-    }
-    res.status(500).send("Server error");
-  }
-});
-
 //@route    Delete api/profile/
 //@desc     Delete profile user and posts
 //@access   Private
@@ -170,6 +151,28 @@ router.delete("/", auth, async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(500).send("server error");
+  }
+});
+
+//@route    GET api/profile/user/:userid
+//@desc     get profile by user id
+//@access   Public
+
+router.get("/user/:user_id", async (req, res) => {
+  try {
+    const profile = await Profile.findOne({
+      user: req.params.user_id,
+    }).populate("user", ["name", "avatar"]);
+
+    if (!profile) return res.status(400).json({ msg: "Profile not found" });
+
+    res.json(profile);
+  } catch (error) {
+    console.log(error);
+    if (error.kind == "ObjectId") {
+      return res.status(400).json({ msg: "Profile not found!" });
+    }
+    res.status(500).send("Server error");
   }
 });
 
