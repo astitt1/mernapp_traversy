@@ -179,7 +179,7 @@ router.post(
         user: req.user.id,
       };
       //add new comment to add to the beggining
-      post.comments.unshft(newComment);
+      post.comments.unshift(newComment);
 
       await post.save();
       res.json(post.comments);
